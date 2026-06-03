@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Lost: View Notices</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: indigo;
+            margin-bottom: 30px;
+        }
+        .notice-card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+        }
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notice-type {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .notice-date {
+            font-size: 13px;
+            color: #666;
+        }
+        .notice-body {
+            margin-top: 15px;
+        }
+        .notice-body p {
+            margin: 5px 0;
+        }
+        .notice-actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Lost & Found Notices</h2>
+
+        <!-- Example Notice -->
+        <div class="notice-card">
+            <div class="notice-header">
+                <span class="notice-type">Lost Item</span>
+                <span class="notice-date">Posted: June 1, 2026</span>
+            </div>
+            <div class="notice-body">
+                <p><strong>Item:</strong> Laptop</p>
+                <p><strong>Location:</strong> Library</p>
+                <p><strong>Details:</strong> Black Dell laptop with stickers on the cover.</p>
+            </div>
+            
+            <div class="notice-actions">
+        <form action="claim.html" method="get">
+            <input type="hidden" name="itemName" value="Laptop">
+            <input type="hidden" name="location" value="Library">
+            <button type="submit">Claim</button>
+        </form>
+    </div>
+            
+        </div>
+
+        <div class="notice-card">
+            <div class="notice-header">
+                <span class="notice-type">Lost Item</span>
+                <span class="notice-date">Posted: June 1, 2026</span>
+            </div>
+            <div class="notice-body">
+                <p><strong>Item:</strong> Wallet</p>
+                <p><strong>Location:</strong> Cafeteria</p>
+                <p><strong>Details:</strong> Brown leather wallet with student ID inside.</p>
+            </div>
+            
+            <div class="notice-actions">
+        <form action="claim.html" method="get">
+            <input type="hidden" name="itemName" value="Wallet">
+            <input type="hidden" name="location" value="Cafeteria">
+            <button type="submit">Claim</button>
+        </form>
+    </div>
+        </div>
+    </div>
+</body>
+</html>

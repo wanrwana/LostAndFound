@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Lost: Post Found Item</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+            width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #1e7e34;
+        }
+        .preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Post Found Item</h2>
+        <form id="foundItemForm">
+            <label for="itemName">Item Name :</label>
+            <input type="text" id="itemName" name="itemName" placeholder="e.g. Wallet, Phone" required>
+
+            <label for="category">Category :</label>
+            <select id="category" name="category" required>
+                <option value="">-- Select Category --</option>
+                <option value="electronics">Electronics</option>
+                <option value="documents">Documents</option>
+                <option value="clothing">Clothing</option>
+                <option value="accessories">Accessories</option>
+                <option value="others">Others</option>
+            </select>
+
+            <label for="location">Found Location :</label>
+            <input type="text" id="location" name="location" placeholder="e.g. Library, Cafeteria" required>
+
+            <label for="dateFound">Date Found :</label>
+            <input type="date" id="dateFound" name="dateFound" required>
+
+            <label for="description">Description :</label>
+            <textarea id="description" name="description" placeholder="Provide details about the item..." required></textarea>
+
+            <label for="contact">Your Contact Information :</label>
+            <input type="text" id="contact" name="contact" placeholder="Your email or phone number" required>
+
+            <!-- Image Upload -->
+            <label for="image">Upload Item Picture :</label>
+            <input type="file" id="image" name="image" accept="image/*">
+
+            <!-- Preview -->
+            <div class="preview" id="preview"></div>
+
+            <button type="submit">Submit Found Item</button>
+        </form>
+    </div>
+
+    <script>
+        // Preview uploaded image
+        document.getElementById("image").addEventListener("change", function(event) {
+            const preview = document.getElementById("preview");
+            preview.innerHTML = "";
+            const file = event

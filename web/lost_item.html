@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Lost: Report Lost Item</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+            width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Report Lost Item</h2>
+        <form id="lostItemForm">
+            <label for="itemName">Item Name :</label>
+            <input type="text" id="itemName" name="itemName" placeholder="e.g. Laptop, Wallet" required>
+
+            <label for="category">Category :</label>
+            <select id="category" name="category" required>
+                <option value="">-- Select Category --</option>
+                <option value="electronics">Electronics</option>
+                <option value="documents">Documents</option>
+                <option value="clothing">Clothing</option>
+                <option value="accessories">Accessories</option>
+                <option value="others">Others</option>
+            </select>
+
+            <label for="location">Last Seen Location :</label>
+            <input type="text" id="location" name="location" placeholder="e.g. Library, Cafe" required>
+
+            <label for="dateLost">Date Lost :</label>
+            <input type="date" id="dateLost" name="dateLost" required>
+
+            <label for="description">Description :</label>
+            <textarea id="description" name="description" placeholder="Write description of your missing item..." required></textarea>
+
+            <!-- Image Upload -->
+            <label for="image">Upload Reference Picture :</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            
+            <label for="contact">Contact Information :</label>
+            <input type="text" id="contact" name="contact" placeholder="e.g. Name, Phone Number" required>
+
+            <!-- Preview -->
+            <div class="preview" id="preview"></div>
+
+            <button type="submit">Submit Report</button>
+        </form>
+    </div>
+</body>
+</html>
