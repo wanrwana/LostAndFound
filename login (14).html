@@ -1,0 +1,42 @@
+package com.user.controller;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class ViewReportServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        String reportId = request.getParameter("id"); // Mengambil ID dari link
+        Map<String, String> report = new HashMap<>();
+        
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            try (Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/LostAndFound", "app", "app")) {
+                String sql = "SELECT * FROM APP.LOST_ITEMS WHERE ID = ?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, reportId);
+                ResultSet rs = ps.executeQuery();
+                
+                if(rs.next()) {
+                    report.put("id", rs.getString("ID"));
+                    report.put("itemName", rs.getString("ITEM_NAME"));
+                    report.put("foundLocation", rs.getString("LOCATION")); // Tukar FOUND_LOCATION kepada LOCATION
+                    report.put("dateFound", rs.getString("DATE_LOST"));
+                    report.put("status", rs.getString("STATUS"));
+                }
+            }
+            
+            // Hantar data ke JSP paparan (contoh: view_report.jsp)
+            request.setAttribute("report", report);
+            request.getRequestDispatcher("manage_notice.jsp").forward(request, response);
+            
+        } catch (IOException | ClassNotFoundException | SQLException | ServletException e) {
+        }
+    }
+}

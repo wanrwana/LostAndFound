@@ -1,0 +1,21 @@
+<%@page import="java.util.Map" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item Details</title>
+</head>
+<body>
+    <%
+        Map<String, String> item = (Map<String, String>) request.getAttribute("item");
+        if (item != null) {
+    %>
+        <h2>Item: <%= item.get("itemName") %></h2>
+        <p><strong>Category:</strong> <%= item.get("category") %></p>
+        <p><strong>Status:</strong> <%= item.get("status") %></p>
+        <p><strong>Description:</strong> <%= item.get("description") %></p>
+        <a href="manage_notice.jsp">Back to List</a>
+    <% } else { %>
+        <p>Item tidak dijumpai.</p>
+    <% } %>
+</body>
+</html>

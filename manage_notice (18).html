@@ -1,0 +1,33 @@
+package com.user.dao;
+
+import java.sql.*;
+
+public class DashboardDAO {
+    private final String url = "jdbc:derby://localhost:1527/LostAndFound";
+    private String user = "app";
+    private String password = "app";
+
+    public int getTotalReports() {
+        int count = 0;
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM LOST_ITEMS")) {
+            if (rs.next()) count = rs.getInt(1);
+        } catch (SQLException e) {}
+        return count;
+    }
+
+    public int getReturnRate() {
+        // Logik kira peratusan di sini...
+        return 0; // Contoh
+    }
+    
+    public String getMostLostCategory() {
+        // Logik SQL untuk kategori paling banyak hilang...
+        return "None";
+    }
+
+    public Object getTotalItems() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+}

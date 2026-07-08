@@ -1,0 +1,85 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.sql.*" %>
+
+<%
+    String username = (String) session.getAttribute("user");
+    if (username == null) { 
+        response.sendRedirect("login.jsp"); 
+        return; 
+    }
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lost & Found Notices</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        h2 { text-align: center; color: #4b0082; margin-bottom: 30px; }
+        .notice-card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; padding-bottom: 70px; }
+        .notice-header { font-weight: bold; color: #007bff; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .item-info { margin: 8px 0; }
+        .btn-claim { background: #4b0082; color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; position: absolute; right: 20px; bottom: 20px; font-weight: bold; }
+        .btn-claim:hover { background: #3a0066; }
+        .btn-disabled { background: grey; color: white; padding: 8px 20px; border-radius: 6px; position: absolute; right: 20px; bottom: 20px; border: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<h2>Lost & Found Notices</h2>
+
+<%
+    String url = "jdbc:derby://localhost:1527/LostAndFound";
+
+    try {
+        Class.forName("org.apache.derby.jdbc.ClientDriver");
+        Connection conn = DriverManager.getConnection(url, "app", "app");
+        Statement stmt = conn.createStatement();
+
+        // Combine LOST_ITEMS and FOUND_ITEMS
+        String sql = 
+            "SELECT ID, ITEM_NAME, LOCATION AS PLACE, DESCRIPTION, DATE_LOST AS DATE, STATUS, 'Lost' AS TYPE " +
+            "FROM APP.LOST_ITEMS " +
+            "UNION ALL " +
+            "SELECT ID, ITEM_NAME, FOUND_LOCATION AS PLACE, DESCRIPTION, DATE_FOUND AS DATE, STATUS, 'Found' AS TYPE " +
+            "FROM APP.FOUND_ITEMS " +
+            "ORDER BY DATE DESC";
+
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while(rs.next()) {
+            String status = rs.getString("STATUS");
+            String type = rs.getString("TYPE");
+%>
+<div class="notice-card">
+    <div class="notice-header">
+        <span><%= type %> Item</span>
+        <span>Posted: <%= rs.getString("DATE") != null ? rs.getString("DATE") : "N/A" %></span>
+    </div>
+    <div class="item-info"><strong>Item:</strong> <%= rs.getString("ITEM_NAME") %></div>
+    <div class="item-info"><strong>Location:</strong> <%= rs.getString("PLACE") %></div>
+    <div class="item-info"><strong>Details:</strong> <%= rs.getString("DESCRIPTION") %></div>
+    <div class="item-info"><strong>Status:</strong> <%= status %></div>
+
+    <% if("ACTIVE".equalsIgnoreCase(status)) { %>
+        <a href="claim.jsp?itemId=<%= rs.getString("ID") %>&itemName=<%= rs.getString("ITEM_NAME") %>&type=<%= type %>" class="btn-claim">Claim</a>
+    <% } else { %>
+        <button class="btn-disabled" disabled>Already <%= status %></button>
+    <% } %>
+</div>
+<%
+        }
+        rs.close();
+        stmt.close();
+        conn.close();
+    } catch(Exception e) {
+        out.println("<p style='color:red;'>Error: " + e.getMessage() + "</p>");
+    }
+%>
+
+</div>
+</body>
+</html>

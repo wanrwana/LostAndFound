@@ -1,0 +1,63 @@
+package com.user.controller;
+
+import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.*;
+
+@MultipartConfig // enables multipart form-data handling for file upload
+public class FoundItemServlet extends HttpServlet {
+    private final String url = "jdbc:derby://localhost:1527/LostAndFound";
+    private final String user = "app";
+    private final String password = "app";
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Retrieve form fields
+        String itemName = request.getParameter("itemName");
+        String category = request.getParameter("category");
+        String foundLocation = request.getParameter("foundLocation");
+        String dateFound = request.getParameter("dateFound");
+        String description = request.getParameter("description");
+        String contact = request.getParameter("contact");
+
+        // Handle uploaded image (optional)
+        Part imagePart = request.getPart("image");
+        String imageFileName = null;
+        if (imagePart != null && imagePart.getSize() > 0) {
+            imageFileName = imagePart.getSubmittedFileName();
+            // Save file to /uploads folder inside your app
+            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdir();
+            imagePart.write(uploadPath + File.separator + imageFileName);
+        }
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            String sql = "INSERT INTO APP.FOUND_ITEMS (ITEM_NAME, CATEGORY, FOUND_LOCATION, DATE_FOUND, DESCRIPTION, CONTACT, IMAGE, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, itemName);
+                ps.setString(2, category);
+                ps.setString(3, foundLocation);
+                ps.setDate(4, java.sql.Date.valueOf(dateFound));
+                ps.setString(5, description);
+                ps.setString(6, contact);
+                ps.setString(7, imageFileName); // store filename
+                ps.setString(8, "ACTIVE"); // default status
+
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error saving found item: " + e.getMessage());
+            request.getRequestDispatcher("view_lost.jsp").forward(request, response);
+            return;
+        }
+
+        // ✅ Redirect student to combined notice board
+        response.sendRedirect("view_lost.jsp");
+    }
+}

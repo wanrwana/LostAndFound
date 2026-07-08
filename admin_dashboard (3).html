@@ -1,0 +1,242 @@
+package com.user.controller;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.*;
+
+
+@MultipartConfig(maxFileSize = 16177215)
+
+public class ClaimServlet extends HttpServlet {
+
+
+private final String URL =
+"jdbc:derby://localhost:1527/LostAndFound";
+
+private final String USER="app";
+private final String PASS="app";
+
+
+private static final String UPLOAD_DIR="uploads";
+
+
+
+@Override
+protected void doPost(HttpServletRequest request,
+HttpServletResponse response)
+
+throws ServletException, IOException {
+
+
+
+request.setCharacterEncoding("UTF-8");
+
+
+String itemId =
+request.getParameter("itemId");
+
+
+String itemName =
+request.getParameter("itemName");
+
+
+String username =
+request.getParameter("username");
+
+
+String claimDate =
+request.getParameter("claimDate");
+
+
+String proofDescription =
+request.getParameter("proofDescription");
+
+
+
+if(itemId==null || username==null){
+
+response.getWriter()
+.println("Missing data");
+
+return;
+
+}
+
+
+
+
+// IMAGE UPLOAD
+
+String proofImage=null;
+
+
+Part filePart =
+request.getPart("proofImage");
+
+
+
+if(filePart!=null &&
+filePart.getSize()>0){
+
+
+String fileName =
+System.currentTimeMillis()
++"_"+filePart.getSubmittedFileName();
+
+
+
+String path =
+request.getServletContext()
+.getRealPath("/"+UPLOAD_DIR);
+
+
+
+File folder =
+new File(path);
+
+
+if(!folder.exists())
+folder.mkdirs();
+
+
+
+filePart.write(
+path+File.separator+fileName);
+
+
+
+proofImage =
+UPLOAD_DIR+"/"+fileName;
+
+}
+
+
+
+
+
+String sql =
+
+"INSERT INTO APP.CLAIM "
++"(ITEM_ID,USERNAME,ITEM_NAME,"
++"CLAIM_DATE,PROOF_DESCRIPTION,"
++"STATUS,CREATED_AT,PROOF_IMAGE,REMARKS)"
++" VALUES (?,?,?,?,?,?,?,?,?)";
+
+
+
+try{
+
+
+Class.forName(
+"org.apache.derby.jdbc.ClientDriver");
+
+
+
+Connection conn =
+DriverManager.getConnection(
+URL,USER,PASS);
+
+
+
+PreparedStatement ps =
+conn.prepareStatement(sql);
+
+
+
+ps.setInt(1,
+Integer.parseInt(itemId));
+
+
+ps.setString(2,username);
+
+
+ps.setString(3,itemName);
+
+
+ps.setString(4,claimDate);
+
+
+ps.setString(5,proofDescription);
+
+
+ps.setString(6,"PENDING");
+
+
+ps.setString(7,
+LocalDateTime.now()
+.format(
+DateTimeFormatter
+.ofPattern("yyyy-MM-dd HH:mm:ss")
+));
+
+
+ps.setString(8,proofImage);
+
+
+ps.setString(9,null);
+
+
+
+ps.executeUpdate();
+
+
+
+
+
+// UPDATE LOST ITEM
+
+String update =
+
+"UPDATE APP.LOST_ITEMS "
++"SET STATUS=? WHERE ID=?";
+
+
+
+PreparedStatement ps2 =
+conn.prepareStatement(update);
+
+
+ps2.setString(1,"ACTIVE");
+
+ps2.setInt(2,
+Integer.parseInt(itemId));
+
+
+ps2.executeUpdate();
+
+
+
+conn.close();
+
+
+
+// pergi verification page
+
+response.sendRedirect(
+"ViewVerificationServlet");
+
+
+
+
+}catch(Exception e){
+
+
+e.printStackTrace();
+
+response.getWriter()
+.println("Error : "+e.getMessage());
+
+}
+
+
+
+}
+
+}

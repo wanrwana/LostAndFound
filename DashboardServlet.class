@@ -1,0 +1,74 @@
+<%@page import="com.user.model.Claim" %>
+<%@page import="java.util.List" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    String role = (String) session.getAttribute("role");
+    if (role == null || !role.equals("admin")) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    List<Claim> list = (List<Claim>) request.getAttribute("claimList");
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Lost: Manage Verification</title>
+    <style>
+        body { font-family:'Segoe UI',Arial,sans-serif; background:#f4f6f9; margin:0; padding:0; }
+        header { background:indigo; color:white; padding:25px; text-align:center; position:relative; }
+        header h1 { margin:0; font-size:28px; }
+        .back-btn { position:absolute; left:20px; top:25px; color:white; text-decoration:none; font-weight:bold; font-size:16px; }
+        .back-btn:hover { text-decoration:underline; }
+        .container { max-width:1200px; margin:40px auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0px 6px 15px rgba(0,0,0,0.1); }
+        h2 { color:indigo; text-align:center; margin-bottom:25px; }
+        table { width:100%; border-collapse:collapse; margin-top:20px; }
+        th,td { border:1px solid #ddd; padding:12px; text-align:center; }
+        th { background:indigo; color:white; }
+        tr:nth-child(even) { background:#f9f9f9; }
+        .action-btn { padding:6px 12px; margin:2px; border:none; border-radius:6px; cursor:pointer; font-size:13px; }
+        .verify-btn { background:#007bff; color:white; }
+        .verify-btn:hover { background:#0056b3; }
+    </style>
+</head>
+<body>
+<header>
+    <a href="admin_dashboard.jsp" class="back-btn">← Back to Dashboard</a>
+    <h1>Claim Verification</h1>
+</header>
+<div class="container">
+    <h2>Pending Verification Requests</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Claim ID</th><th>Item</th><th>Claimant</th><th>Claim Date</th><th>Status</th><th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <%
+            if (list != null && !list.isEmpty()) {
+                for (Claim c : list) {
+        %>
+            <tr>
+                <td><%=c.getClaimId()%></td>
+                <td><%=c.getItemName()%></td>
+                <td><%=c.getUsername()%></td>
+                <td><%=c.getClaimDate()%></td>
+                <td><%=c.getStatus()%></td>
+                <td>
+                    <a href="verify.jsp?claimId=<%=c.getClaimId()%>" class="action-btn verify-btn">Verify</a>
+                </td>
+            </tr>
+        <%
+                }
+            } else {
+        %>
+            <tr><td colspan="6">No pending claim.</td></tr>
+        <%
+            }
+        %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+package com.user.model;
+public class Report {
+    private String id, itemName, location, dateLost, status;
+    public Report(String id, String itemName, String location, String dateLost, String status) {
+        this.id = id; this.itemName = itemName; this.location = location; 
+        this.dateLost = dateLost; this.status = status;
+    }
+    public String getId() { return id; }
+    public String getItemName() { return itemName; }
+    public String getLocation() { return location; }
+    public String getDateLost() { return dateLost; }
+    public String getStatus() { return status; }
+}

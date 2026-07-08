@@ -1,0 +1,241 @@
+package com.user.controller;
+
+import java.io.IOException;
+import java.sql.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+
+public class VerifyServlet extends HttpServlet {
+
+
+    private final String URL =
+        "jdbc:derby://localhost:1527/LostAndFound";
+
+    private final String USER = "app";
+    private final String PASS = "app";
+
+
+
+    @Override
+    protected void doPost(HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+
+        String claimIdStr = request.getParameter("claimId");
+        String decision = request.getParameter("decision");
+        String remarks = request.getParameter("remarks");
+
+
+        Connection conn = null;
+
+
+        try {
+
+
+            Class.forName(
+            "org.apache.derby.jdbc.ClientDriver");
+
+
+
+            conn = DriverManager.getConnection(
+                    URL, USER, PASS);
+
+
+
+            int claimId =
+            Integer.parseInt(claimIdStr);
+
+
+
+
+            // ===============================
+            // APPROVE CLAIM
+            // ===============================
+
+            if("Approve".equalsIgnoreCase(decision)){
+
+
+
+                // 1. Update CLAIM
+
+                String updateClaim =
+                "UPDATE APP.CLAIM "
+                +"SET STATUS=?, REMARKS=? "
+                +"WHERE CLAIM_ID=?";
+
+
+
+                PreparedStatement ps =
+                conn.prepareStatement(updateClaim);
+
+
+
+                ps.setString(1,"APPROVED");
+                ps.setString(2,remarks);
+                ps.setInt(3,claimId);
+
+
+
+                ps.executeUpdate();
+
+
+
+
+
+                // 2. Get item id
+
+                String getItem =
+                "SELECT ITEM_ID FROM APP.CLAIM "
+                +"WHERE CLAIM_ID=?";
+
+
+                PreparedStatement ps2 =
+                conn.prepareStatement(getItem);
+
+
+                ps2.setInt(1,claimId);
+
+
+                ResultSet rs =
+                ps2.executeQuery();
+
+
+
+                int itemId = 0;
+
+
+
+                if(rs.next()){
+
+                    itemId =
+                    rs.getInt("ITEM_ID");
+
+                }
+
+
+
+
+
+                // 3. Insert HANDOVER LOG
+
+
+                String insertHandover =
+
+                "INSERT INTO APP.HANDOVER_LOG "
+                +"(CLAIM_ID,HANDOVER_DATE,STATUS,ITEM_ID)"
+                +" VALUES(?,?,?,?)";
+
+
+
+                PreparedStatement ps3 =
+                conn.prepareStatement(insertHandover);
+
+
+
+                ps3.setInt(1,claimId);
+
+
+
+                ps3.setDate(2,
+                new java.sql.Date(
+                System.currentTimeMillis()));
+
+
+
+                ps3.setString(3,"Pending");
+
+
+
+                ps3.setInt(4,itemId);
+
+
+
+                ps3.executeUpdate();
+
+
+
+
+                // 4. Update lost item status
+
+                String updateItem =
+                "UPDATE APP.LOST_ITEMS "
+                +"SET STATUS=? WHERE ID=?";
+
+
+
+                PreparedStatement ps4 =
+                conn.prepareStatement(updateItem);
+
+
+
+                ps4.setString(1,"CLAIMED");
+
+                ps4.setInt(2,itemId);
+
+
+
+                ps4.executeUpdate();
+
+
+
+            }
+
+
+
+            // ===============================
+            // REJECT CLAIM
+            // ===============================
+
+            else if("Reject".equalsIgnoreCase(decision)){
+
+
+
+                String reject =
+
+                "UPDATE APP.CLAIM "
+                +"SET STATUS=?, REMARKS=? "
+                +"WHERE CLAIM_ID=?";
+
+
+
+                PreparedStatement ps =
+                conn.prepareStatement(reject);
+
+
+
+                ps.setString(1,"REJECTED");
+                ps.setString(2,remarks);
+                ps.setInt(3,claimId);
+
+
+
+                ps.executeUpdate();
+
+
+            }
+
+
+
+
+
+            response.sendRedirect(
+            "ViewVerificationServlet");
+
+
+
+        }
+        catch(Exception e){
+
+            e.printStackTrace();
+
+            response.getWriter()
+            .println("Error : "+e.getMessage());
+
+        }
+
+
+
+    }
+
+}

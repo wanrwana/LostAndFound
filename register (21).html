@@ -1,0 +1,36 @@
+package com.user.dao;
+
+import com.user.model.User;
+import java.sql.*;
+
+public class UserDAO {
+    private final String url = "jdbc:derby://localhost:1527/LostAndFound";
+    private final String user = "app";
+    private final String password = "app";
+
+    public User getUserByUsername(String username) {
+        User u = null;
+        // USER is reserved keyword → use quotes
+        String sql = "SELECT ID, USERNAME, FULLNAME, EMAIL, PHONE, ROLE, PASSWORD FROM \"user\" WHERE USERNAME = ?";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    u = new User();
+                    u.setId(rs.getInt("ID"));
+                    u.setUsername(rs.getString("USERNAME"));
+                    u.setFullname(rs.getString("FULLNAME"));
+                    u.setEmail(rs.getString("EMAIL"));
+                    u.setPhone(rs.getString("PHONE"));
+                    u.setRole(rs.getString("ROLE"));
+                    u.setPassword(rs.getString("PASSWORD"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return u;
+    }
+}

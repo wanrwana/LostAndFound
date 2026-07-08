@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Lost: Manage Verification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: indigo;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: indigo;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background: indigo;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            margin: 2px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .update-btn{
+            background: #4b0082;
+            color: white;
+        }
+        .verify-btn {
+            background: #007bff;
+            color: white;
+        }
+        .back-btn {
+    position: absolute;
+    left: 20px;
+    top: 25px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+    </style>
+</head>
+<body>
+    <header>
+    <a href="admin_dashboard.jsp" class="back-btn">← Back to Dashboard</a>
+    <h1>Claim verification</h1>
+</header>
+
+    <div class="container">
+        <h2>Pending Verification Requests</h2>
+        <table id="reportTable">
+            <thead>
+    <tr>
+    <th>Report ID</th>
+    <th>Item</th>
+    <th>Claimant</th>
+    <th>Claim Date</th>
+    <th>Status</th>
+    <th>Action</th>
+    </tr>
+            </thead>
+            <tbody>
+
+<tr>
+    <td>LR001</td>
+    <td>Wallet</td>
+    <td>Adam</td>
+    <td>2026-06-01</td>
+    <td class="status">Pending</td>
+    <td>
+        <button class="action-btn verify-btn"
+         onclick="location.href='verify.html'">
+        Verify
+        </button>
+    </td>
+    </tr>
+
+            <tr>
+             <td>LR002</td>
+              <td>Laptop</td>
+              <td>Alyaa</td>
+              <td>2026-06-01</td>
+              <td class="status">Pending</td>
+              <td>
+              <button class="action-btn verify-btn">Verify</button>
+             </td>
+             </tr>
+
+             </tbody>
+        </table>
+    </div>
+</body>
+</html>

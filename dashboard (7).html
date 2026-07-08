@@ -1,0 +1,79 @@
+package com.user.controller;
+
+import java.io.IOException;
+import java.sql.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+
+public class LoginServlet extends HttpServlet {
+
+    private final String url = "jdbc:derby://localhost:1527/LostAndFound";
+    private final String user = "app";
+    private final String password = "app";
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+
+        String uname = request.getParameter("username");
+        String upass = request.getParameter("password");
+        String urole = request.getParameter("role");
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            
+            String loginQuery = "SELECT * FROM \"user\" WHERE username = ? AND password = ? AND role = ?";
+            try (PreparedStatement psLogin = conn.prepareStatement(loginQuery)) {
+                psLogin.setString(1, uname);
+                psLogin.setString(2, upass);
+                psLogin.setString(3, urole);
+                
+                try (ResultSet rsLogin = psLogin.executeQuery()) {
+                    if (rsLogin.next()) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("user", uname); 
+                        session.setAttribute("role", urole);
+                        
+                        loadDashboardStats(conn, request);
+                        
+                        if ("admin".equalsIgnoreCase(urole)) {
+                            request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
+                        } else {
+                            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+                        }
+                    } else {
+                        request.setAttribute("errorMessage", "Wrong Username/Password/Role");
+                        request.getRequestDispatcher("login.jsp").forward(request, response);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            request.setAttribute("errorMessage", "Ralat sistem: " + e.getMessage());
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
+    }
+
+    private void loadDashboardStats(Connection conn, HttpServletRequest request) throws SQLException {
+        String statsQuery = "SELECT COUNT(*) AS total, " +
+                            "SUM(CASE WHEN status = 'Returned' THEN 1 ELSE 0 END) AS returned " +
+                            "FROM LOST_ITEMS";
+        
+        try (PreparedStatement psStats = conn.prepareStatement(statsQuery);
+             ResultSet rsStats = psStats.executeQuery()) {
+            
+            if (rsStats.next()) {
+                int total = rsStats.getInt("total");
+                int returned = rsStats.getInt("returned");
+                int rate = (total > 0) ? (int) Math.round(((double) returned / total) * 100) : 0;
+                
+                request.setAttribute("totalReports", total);
+                request.setAttribute("returnRate", rate);
+            }
+        }
+
+        String catQuery = "SELECT category, COUNT(*) as jumlah FROM LOST_ITEMS GROUP BY category ORDER BY jumlah DESC FETCH FIRST 1 ROWS ONLY";
+        try (PreparedStatement psCat = conn.prepareStatement(catQuery);
+             ResultSet rsCat = psCat.executeQuery()) {
+            request.setAttribute("mostLostCategory", rsCat.next() ? rsCat.getString("category") : "None");
+        }
+    }
+}

@@ -1,0 +1,26 @@
+<%@page import="java.sql.*"%>
+
+<%
+
+String claimId=request.getParameter("claimId");
+
+Class.forName("org.apache.derby.jdbc.ClientDriver");
+
+Connection conn=DriverManager.getConnection(
+"jdbc:derby://localhost:1527/LostAndFound",
+"app",
+"app");
+
+PreparedStatement ps=conn.prepareStatement(
+"UPDATE CLAIM SET STATUS='COMPLETED' WHERE CLAIM_ID=?");
+
+ps.setInt(1,Integer.parseInt(claimId));
+
+ps.executeUpdate();
+
+ps.close();
+conn.close();
+
+response.sendRedirect("HandoverServlet");
+
+%>
